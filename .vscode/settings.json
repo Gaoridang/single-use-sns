@@ -1,0 +1,15 @@
+{
+    "eslint.enable": true,
+    "eslint.validate": ["javascript"],
+    "eslint.run": "onType",
+    "eslint.workingDirectories": ["."],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.prettier": "never"
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}
