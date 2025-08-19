@@ -8,7 +8,6 @@ const postSchema = Joi.object({
 });
 
 const updateSchema = Joi.object({
-    type: Joi.string().valid("text", "photo", "video").optional(), // Optional for PUT
     content: Joi.string().allow("").optional(),
     tags: Joi.array().items(Joi.string()).optional(),
 }).min(1); // Ensure at least one field is provided
