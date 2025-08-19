@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import { createPost, getAllPosts, getPostById, updatePost, deletePost, database } from "./db.js";
 import { upload } from "./fileHandler.js";
@@ -17,7 +18,18 @@ import multer from "multer";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(helmet());
+// Configure helmet with custom CORP header for /media
+app.use(
+    helmet({
+        crossOriginResourcePolicy: { policy: "same-origin" }, // Default for other routes
+    }),
+);
+// Override CORP for /media route
+app.use("/media", (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+});
+app.use(cors({ origin: "*" })); // Allow all origins for development
 app.use(bodyParser.json());
 app.use(morgan("combined", { stream: { write: (msg) => logger.info(msg.trim()) } }));
 app.use(
