@@ -108,17 +108,23 @@ app.post("/posts", validatePost, upload.single("media"), async (req, res) => {
 });
 
 app.get("/posts", (req, res) => {
-    getAllPosts((err, rows) => {
+    const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 posts per page
+    getAllPosts(page, limit, (err, result) => {
         if (err) {
             logger.error(`Database error: ${err.message}`);
             return res.status(500).json({ error: err.message });
         }
-        const enhancedRows = rows.map((row) => ({
+        const enhancedPosts = result.posts.map((row) => ({
             ...row,
             media_url: row.media_path ? `/media/${row.media_path}` : null,
         }));
-        logger.info("Retrieved all posts");
-        res.json(enhancedRows);
+        logger.info(`Retrieved posts for page ${result.currentPage}, limit ${limit}`);
+        res.json({
+            posts: enhancedPosts,
+            currentPage: result.currentPage,
+            totalPages: result.totalPages,
+            totalPosts: result.totalPosts,
+        });
     });
 });
 

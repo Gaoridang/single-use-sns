@@ -15,9 +15,39 @@ export function createPost(post, callback) {
     );
 }
 
-// Function to retrieve all posts
-export function getAllPosts(callback) {
-    database.all(`SELECT * FROM posts ORDER BY timestamp DESC`, callback);
+// Function to retrieve paginated posts with metadata
+export function getAllPosts(page = 1, limit = 10, callback) {
+    // Validate page and limit to prevent SQL injection and invalid queries
+    const safePage = Math.max(1, parseInt(page, 10));
+    const safeLimit = Math.min(Math.max(1, parseInt(limit, 10)), 100); // Cap limit to prevent abuse
+    const offset = (safePage - 1) * safeLimit;
+
+    // Query to count total posts
+    database.get(`SELECT COUNT(*) as total FROM posts`, (err, countRow) => {
+        if (err) {
+            return callback(err);
+        }
+        const totalPosts = countRow.total;
+
+        // Query to fetch paginated posts
+        database.all(
+            `SELECT * FROM posts ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
+            [safeLimit, offset],
+            (err, rows) => {
+                if (err) {
+                    return callback(err);
+                }
+                // Calculate total pages
+                const totalPages = Math.ceil(totalPosts / safeLimit);
+                callback(null, {
+                    posts: rows,
+                    currentPage: safePage,
+                    totalPages,
+                    totalPosts,
+                });
+            },
+        );
+    });
 }
 
 // Function to retrieve a post by ID
