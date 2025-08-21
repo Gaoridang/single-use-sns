@@ -13,11 +13,18 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/quicktime"];
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/heif",
+        "video/mp4",
+        "video/quicktime",
+    ];
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error("Invalid file type. Only JPEG, PNG, GIF, MP4, and MOV are allowed."));
+        cb(new Error("Invalid file type. Only JPEG, PNG, GIF, HEIF, MP4, and MOV are allowed."));
     }
 };
 
@@ -26,7 +33,7 @@ const upload = multer({
     fileFilter,
     limits: {
         fileSize: 50 * 1024 * 1024, // 50MB limit for photos
-        files: 1, // One file per upload
+        files: 5, // Five files per upload
     },
 });
 
