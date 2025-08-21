@@ -2,7 +2,7 @@ name: Deploy to Home Server
 
 on:
     push:
-        branches: [main] # 푸시할 브랜치 (필요 시 다른 브랜치로 변경 가능)
+        branches: [main]
 
 jobs:
     deploy:
@@ -22,4 +22,6 @@ jobs:
                       cd ${{ secrets.APP_PATH }}
                       git pull origin main
                       npm install --production
+                      export PATH=$PATH:/usr/local/bin  # PM2 경로 추가
+                      pm2 --version || npm install -g pm2  # PM2 설치 확인 및 설치
                       pm2 restart ${{ secrets.PM2_APP_NAME }}
