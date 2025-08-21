@@ -19,9 +19,12 @@ jobs:
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT }}
                   script: |
+                      export NVM_DIR="$HOME/.nvm"
+                      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                      nvm use 22
+                      export PATH=$PATH:/home/first/.nvm/versions/node/v22.18.0/bin
                       cd ${{ secrets.APP_PATH }}
                       git pull origin main
-                      npm install --production
-                      export PATH=$PATH:/usr/local/bin  # PM2 경로 추가
-                      pm2 --version || npm install -g pm2  # PM2 설치 확인 및 설치
-                      pm2 restart ${{ secrets.PM2_APP_NAME }}
+                      npm install --omit=dev
+                      /home/first/.nvm/versions/node/v22.18.0/bin/pm2 --version || npm install -g pm2 --prefix ~/.npm-global
+                      /home/first/.nvm/versions/node/v22.18.0/bin/pm2 restart ${{ secrets.PM2_APP_NAME }}
